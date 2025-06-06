@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod1
+  labels:
+    name: pod1
+spec:
+  containers:
+  - name: pod1
+    image: nginx
+    resources:
+      limits:
+        memory: "128Mi"
+        cpu: "500m"
+    ports:
+      - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: myservice
+spec:
+  type: ClusterIP
+  selector:
+    name: pod1
+  ports:
+  - port: 8080
+    targetPort: 80
+# 'containerPort' and 'targetPort' have to be similer
+# Service 'selector' and 'pod label name' have to be similer
+# 'port' means in which the service will exopse itself
+# curl myservice:8080
