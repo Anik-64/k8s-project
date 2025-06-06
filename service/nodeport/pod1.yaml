@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp
+  labels:
+    name: myapp
+spec:
+  containers:
+  - name: myapp
+    image: nginx
+    resources:
+      limits:
+        memory: "128Mi"
+        cpu: "500m"
+    ports:
+      - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp
+spec:
+  type: NodePort
+  selector:
+    name: myapp
+  ports:
+    - port: 80 # You can also ignore this port
+      targetPort: 80
+      nodePort: 30005
+# 'nodePort: 30005' specifies the port, if you do not set this in here then when the nodeport service will restart then the port will be changed
+# The range of valid ports for nodePort is 30000-32767
+
