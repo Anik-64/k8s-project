@@ -80,3 +80,30 @@ kubectl taint nodes node1 key=value:NoSchedule-
 | **Taint**      | Node                                      | Restrict pods from running unless tolerated |
 | **Toleration** | Pod                                       | Allow scheduling on tainted nodes           |
 | **Effect**     | NoSchedule / PreferNoSchedule / NoExecute | Defines taint behavior                      |
+
+
+## **Detailed Explanation**
+
+A **toleration** only means:
+
+> “This pod can tolerate (i.e., is allowed to be scheduled on) nodes with this taint.”
+
+But — it does **not mean**:
+
+> “This pod must run on those tainted nodes.”
+
+So if other nodes (without taint) are available,
+the **scheduler is free** to place the pod on **any node** — tainted or not — unless you restrict it using:
+
+* `nodeSelector`
+* or `nodeAffinity`.
+
+✅ **Summary Table**
+
+| Node    | Taint               | Pod with Toleration | Pod without Toleration |
+| ------- | ------------------- | ------------------- | ---------------------- |
+| `node1` | gpu=true:NoSchedule | ✅ Allowed           | ❌ Blocked              |
+| `node2` | none                | ✅ Allowed           | ✅ Allowed              |
+| `node3` | none                | ✅ Allowed           | ✅ Allowed              |
+
+
