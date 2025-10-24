@@ -23,7 +23,6 @@ This means:
 * The node `node1` **will not accept new pods**
 * **Unless** those pods have a **matching toleration**.
 
----
 
 ### Step 2: Pod with Matching Toleration
 
@@ -43,8 +42,8 @@ spec:
     effect: "NoSchedule"
 ```
 
-✅ This pod **can** be scheduled on `node1`
-❌ Any other pod **cannot** be scheduled there.
+✅ This pod **can** be scheduled on `node1`  
+❌ Any other pod **cannot** be scheduled there.  
 
 
 ## Types of `effect`
@@ -55,7 +54,6 @@ spec:
 | `PreferNoSchedule` | Try **to avoid** placing pods here (soft rule).                                  |
 | `NoExecute`        | New pods are not scheduled **and** existing non-tolerating pods are **evicted**. |
 
----
 
 ## Removing a Taint
 
