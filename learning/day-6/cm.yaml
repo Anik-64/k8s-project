@@ -6,3 +6,6 @@ data:
   NAME: "Anik Majumder"
   PLACE: "Kotowali, Chattogram"
   MAIL: "anikmajumder303@gmail.com"
+
+
+#  kubectl create configmap myconfig --from-literal=name="Anik" --from-literal=place="Chattogram" --from-literal=mail=anik@example.com --dry-run=client -o yaml
