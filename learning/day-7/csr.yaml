@@ -16,6 +16,7 @@ spec:
 # how to get base64 encoded .csr?
 ## run ->$ cat filename.csr | base64 | tr -d "\n"
 
+# Apply this csr.yaml file 
 
 # After approved the csr using the command ($ kubectl certificate approve anik)
 ## run ->$ kubectl get csr anik -o yaml > issuecert.yaml
