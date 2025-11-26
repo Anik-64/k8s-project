@@ -94,7 +94,8 @@ openssl x509 -req -in anik.csr \
   -out anik.crt -days 365
 ```
 
-🎉 This creates the **final certificate** → `anik.crt`.
+🎉 This creates the **final certificate** → `anik.crt`.  
+This **sign** code will create the anik.crt automatically but if you apply the **csr.yaml** file this will do the same thing
 
 ## **STEP 4 — Create a New User in Kubeconfig**
 
