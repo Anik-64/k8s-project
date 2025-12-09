@@ -70,8 +70,8 @@ openssl req -new -key anik.key -out anik.csr -subj "/CN=anik/O=dev-team"
 
 Breakdown:
 
-* **CN=anik** → username
-* **O=dev-team** → group (important later for RBAC)
+* **CN=anik** → username (**CN** means **Common Name**)
+* **O=dev-team** → group (important later for RBAC) (**O** means **Organization**)
 
 ## **STEP 3 — Sign the CSR Using Kubernetes CA**
 
