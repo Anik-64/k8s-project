@@ -20,3 +20,4 @@ spec:
 
 # After approved the csr using the command ($ kubectl certificate approve anik)
 ## run ->$ kubectl get csr anik -o yaml > issuecert.yaml
+# To find the issued certificate in the issuecert.yaml file 
