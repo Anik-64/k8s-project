@@ -159,3 +159,6 @@ This gives user **anik** access to read **nodes across the entire cluster**.
 > **Role & RoleBinding = namespace-level access**
 > **ClusterRole & ClusterRoleBinding = cluster-wide access**
 
+# Diagram
+
+https://app.eraser.io/workspace/0HjEEBtv3M5GJKz078mi?origin=share
