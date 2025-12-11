@@ -83,8 +83,8 @@ A **ClusterRole** gives permissions **across the entire cluster**.
 
 A ClusterRole:
 
-✔ Works in *all namespaces*
-✔ Can include non-namespaced resources (nodes, PVs etc.)
+✔ Works in *all namespaces*  
+✔ Can include non-namespaced resources (nodes, PVs etc.)  
 
 Example:
 
@@ -152,8 +152,8 @@ This gives user **anik** access to read **nodes across the entire cluster**.
 
 # Summary 
 
-> **Role & RoleBinding = namespace-level access**
-> **ClusterRole & ClusterRoleBinding = cluster-wide access**
+> **Role & RoleBinding = namespace-level access**  
+> **ClusterRole & ClusterRoleBinding = cluster-wide access**  
 
 # Diagram
 
