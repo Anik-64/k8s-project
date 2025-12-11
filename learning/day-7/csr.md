@@ -139,7 +139,19 @@ Error: forbidden
 Why?
 Because the user is authenticated but **does not have permissions**.
 
-(This is where RBAC like RoleBinding comes in — we’re skipping that now.)
+(This is where RBAC like RoleBinding comes in.)
+
+---
+
+## How to remove the user from kubeconfig
+
+```sh
+kubectl config use-context kubernetes-admin@kubernetes  
+kubectl config delete-context anik  
+kubectl config unset users.anik  
+kubectl config unset clusters.anik  
+kubectl config view  
+```
 
 ---
 
