@@ -8,4 +8,3 @@ rules:
   resources: ["pods"]
   verbs: ["get", "watch", "list"]
   
-# This Role allows read-only access to Pods within the 'default' namespace.
