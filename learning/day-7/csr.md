@@ -104,7 +104,8 @@ You tell kubectl to use the certificate:
 ```sh
 kubectl config set-credentials anik \
   --client-certificate=anik.crt \
-  --client-key=anik.key
+  --client-key=anik.key \
+  --embed-certs=true
 ```
 
 ## **STEP 5 — Create a Context for User**
@@ -112,7 +113,7 @@ kubectl config set-credentials anik \
 A context = cluster + user + namespace
 
 ```sh
-kubectl config set-context anik-context \
+kubectl config set-context anik \
   --cluster=kubernetes \
   --user=anik
 ```
@@ -120,7 +121,7 @@ kubectl config set-context anik-context \
 Switch to the user:
 
 ```sh
-kubectl config use-context anik-context
+kubectl config use-context anik
 ```
 
 Now test:
