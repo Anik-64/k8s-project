@@ -1,8 +1,4 @@
-Here is a **simple, clear, and complete explanation** of **Role**, **RoleBinding**, **ClusterRole**, and **ClusterRoleBinding** — how they work, why they exist, and the difference between them.
-
----
-
-# ⭐ **RBAC in Kubernetes (Very Simple Explanation)**
+# **RBAC in Kubernetes**
 
 RBAC = **Role-Based Access Control**
 It controls:
@@ -17,11 +13,11 @@ Kubernetes uses RBAC (Roles, RoleBinding, ClusterRoles, ClusterRoleBindings) to 
 
 ---
 
-# 🧩 **1. Role**
+# **1. Role**
 
 A **Role** gives **permissions for a specific namespace**.
 
-### ➤ Meaning:
+### Meaning:
 
 A **Role works only inside a single namespace**.
 
@@ -48,7 +44,7 @@ A Role **cannot** give access outside its namespace.
 
 ---
 
-# 🧩 **2. RoleBinding**
+# **2. RoleBinding**
 
 RoleBinding = **Attaches a Role to a user or group**.
 
@@ -79,11 +75,11 @@ User **anik** can read pods **only in the default namespace**.
 
 ---
 
-# 🧩 **3. ClusterRole**
+# **3. ClusterRole**
 
 A **ClusterRole** gives permissions **across the entire cluster**.
 
-### ➤ Meaning:
+### Meaning:
 
 A ClusterRole:
 
@@ -109,7 +105,7 @@ ClusterRoles can also define namespace permissions but are available across the 
 
 ---
 
-# 🧩 **4. ClusterRoleBinding**
+# **4. ClusterRoleBinding**
 
 ClusterRoleBinding = attach ClusterRole to a user or group — **cluster-wide**.
 
@@ -132,7 +128,7 @@ This gives user **anik** access to read **nodes across the entire cluster**.
 
 ---
 
-# 🔥 **Big Differences (very important)**
+# **Big Differences**
 
 | RBAC Component         | Scope        | Purpose                                                |
 | ---------------------- | ------------ | ------------------------------------------------------ |
@@ -143,7 +139,7 @@ This gives user **anik** access to read **nodes across the entire cluster**.
 
 ---
 
-#  How They Work Together (Flow)
+#  How They Work Together 
 
 1. **User logs in** using certificate/token
 2. Kubernetes reads the user identity
