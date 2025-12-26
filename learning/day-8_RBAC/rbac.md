@@ -81,7 +81,7 @@ A **ClusterRole** gives permissions **across the entire cluster**.
 
 ### Meaning:
 
-A ClusterRole:
+A ClusterRole:  
 
 ✔ Works in *all namespaces*  
 ✔ Can include non-namespaced resources (nodes, PVs etc.)  
