@@ -43,7 +43,7 @@ Each day folder includes:
 
 This structured approach makes it easy to follow along with my Kubernetes learning journey and understand the progression of concepts.
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -75,7 +75,7 @@ Like as:
    kubectl get <resource-type>
    ```
 
-## 📖 Learning Path
+## Learning Path
 
 If you're using this repository to learn Kubernetes, I recommend:
 
