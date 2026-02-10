@@ -1,6 +1,7 @@
 # **RBAC in Kubernetes**
 
 RBAC = **Role-Based Access Control**
+
 It controls:
 
 ### ✔ Who can access the cluster
@@ -9,19 +10,81 @@ It controls:
 
 ### ✔ Where they can do it (namespace or cluster-wide)
 
-Kubernetes uses RBAC (Roles, RoleBinding, ClusterRoles, ClusterRoleBindings) to enforce permissions.
+Kubernetes enforces RBAC using:
+
+* **Role**
+* **RoleBinding**
+* **ClusterRole**
+* **ClusterRoleBinding**
+* **ServiceAccount** (identity for applications)
 
 ---
 
-# **1. Role**
+# **Who Can Be Granted Access? (Very Important)**
 
-A **Role** gives **permissions for a specific namespace**.
+RBAC permissions are granted to **subjects**:
 
-### Meaning:
+| Subject Type       | Used For                    |
+| ------------------ | --------------------------- |
+| **User**           | Humans (admins, developers) |
+| **Group**          | Collection of users         |
+| **ServiceAccount** | Applications / Pods         |
 
-A **Role works only inside a single namespace**.
+👉 **RBAC does NOT create users**
+👉 It only **authorizes identities**
 
-### Example permissions inside namespace `default`:
+---
+
+# **1. ServiceAccount (NEW – Core Concept)**
+
+A **ServiceAccount (SA)** is an **identity for Pods**, not humans.
+
+### Why ServiceAccount exists?
+
+Pods need to:
+
+* Talk to Kubernetes API
+* Read ConfigMaps
+* Watch Pods
+* Create Jobs, etc.
+
+They **should not use admin credentials**.
+
+---
+
+## Default behavior
+
+If you don’t specify a ServiceAccount:
+
+```text
+Pod uses: default ServiceAccount
+```
+
+This is **bad practice** for production.
+
+---
+
+## Create a ServiceAccount
+
+```yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: pod-reader-sa
+  namespace: default
+```
+
+✔ Creates an identity
+✔ No permissions yet
+
+---
+
+# **2. Role**
+
+A **Role** defines **what actions are allowed**
+📍 **Only inside one namespace**
+
+### Example: Read Pods in `default`
 
 ```yaml
 kind: Role
@@ -37,28 +100,28 @@ rules:
 
 ### This role allows:
 
-* read-only access to pods
-* **only in the default namespace**
+✔ Read-only access to Pods
+✔ Only in `default` namespace
 
-A Role **cannot** give access outside its namespace.
+🚫 Cannot access other namespaces
 
 ---
 
-# **2. RoleBinding**
+# **3. RoleBinding**
 
-RoleBinding = **Attaches a Role to a user or group**.
+RoleBinding = **Connects a Role to a subject**
 
-It tells Kubernetes:
+> “This identity can use this role”
 
-> “This user is allowed to use this role’s permissions.”
+---
 
-### Example:
+## 🔹 RoleBinding for a USER
 
 ```yaml
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: read-pods
+  name: read-pods-user
   namespace: default
 subjects:
 - kind: User
@@ -69,24 +132,69 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
 ```
 
-### What this means:
-
-User **anik** can read pods **only in the default namespace**.
+✔ User `anik` can read pods in `default`
 
 ---
 
-# **3. ClusterRole**
+## 🔹 RoleBinding for a SERVICEACCOUNT (Most Common)
 
-A **ClusterRole** gives permissions **across the entire cluster**.
+```yaml
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: read-pods-sa
+  namespace: default
+subjects:
+- kind: ServiceAccount
+  name: pod-reader-sa
+  namespace: default
+roleRef:
+  kind: Role
+  name: pod-reader
+  apiGroup: rbac.authorization.k8s.io
+```
 
-### Meaning:
+✔ Pods using `pod-reader-sa` can read pods
+✔ Only in `default` namespace
 
-A ClusterRole:  
+---
 
-✔ Works in *all namespaces*  
-✔ Can include non-namespaced resources (nodes, PVs etc.)  
+# **4. Using ServiceAccount in a Pod**
 
-Example:
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-pod
+spec:
+  serviceAccountName: pod-reader-sa
+  containers:
+  - name: busybox
+    image: busybox
+    command: ["sh", "-c", "sleep 3600"]
+```
+
+### What happens automatically?
+
+✔ Kubernetes mounts a token
+✔ Pod authenticates as:
+
+```
+system:serviceaccount:default:pod-reader-sa
+```
+
+✔ RBAC is applied using that identity
+
+---
+
+# **5. ClusterRole**
+
+A **ClusterRole** defines permissions **cluster-wide**
+
+✔ All namespaces
+✔ Cluster-scoped resources (nodes, PVs)
+
+### Example: Read Nodes
 
 ```yaml
 kind: ClusterRole
@@ -96,65 +204,115 @@ metadata:
 rules:
 - apiGroups: [""]
   resources: ["nodes"]
-  verbs: ["get", list]
+  verbs: ["get", "list"]
 ```
-
-This allows reading **nodes**, which is a cluster-wide resource.
-
-ClusterRoles can also define namespace permissions but are available across the cluster.
 
 ---
 
-# **4. ClusterRoleBinding**
+# **6. ClusterRoleBinding**
 
-ClusterRoleBinding = attach ClusterRole to a user or group — **cluster-wide**.
+ClusterRoleBinding = attach ClusterRole to a subject **for the whole cluster**
 
-Example:
+---
+
+## Example: User access
 
 ```yaml
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: all-nodes-reader
+  name: nodes-reader
 subjects:
 - kind: User
   name: anik
 roleRef:
   kind: ClusterRole
   name: view-nodes
+  apiGroup: rbac.authorization.k8s.io
 ```
 
-This gives user **anik** access to read **nodes across the entire cluster**.
+---
+
+## Example: ServiceAccount cluster access
+
+```yaml
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: sa-nodes-reader
+subjects:
+- kind: ServiceAccount
+  name: pod-reader-sa
+  namespace: default
+roleRef:
+  kind: ClusterRole
+  name: view-nodes
+  apiGroup: rbac.authorization.k8s.io
+```
+
+✔ Any pod using this SA can read nodes
 
 ---
 
-# **Big Differences**
+# **Big Differences (Updated)**
 
-| RBAC Component         | Scope        | Purpose                                                |
-| ---------------------- | ------------ | ------------------------------------------------------ |
-| **Role**               | Namespace    | Permissions in one namespace                           |
-| **RoleBinding**        | Namespace    | Binds Role → user in that namespace                    |
-| **ClusterRole**        | Cluster-wide | Permissions across all namespaces or cluster resources |
-| **ClusterRoleBinding** | Cluster-wide | Binds ClusterRole → user for entire cluster            |
-
----
-
-#  How They Work Together 
-
-1. **User logs in** using certificate/token
-2. Kubernetes reads the user identity
-3. RBAC checks the user’s *bindings*
-4. From bindings, it finds the *role or clusterrole*
-5. Role/ClusterRole contains the allowed verbs (“get”, “list”, “create”)
-6. The API server says **allowed** or **forbidden**
+| Component          | Scope     | Used By   | Purpose                   |
+| ------------------ | --------- | --------- | ------------------------- |
+| Role               | Namespace | User / SA | Namespace permissions     |
+| RoleBinding        | Namespace | User / SA | Attach Role               |
+| ClusterRole        | Cluster   | User / SA | Cluster permissions       |
+| ClusterRoleBinding | Cluster   | User / SA | Attach ClusterRole        |
+| ServiceAccount     | Namespace | Pods      | Identity for applications |
 
 ---
 
-# Summary 
+# **How Everything Works Together (FLOW)**
 
-> **Role & RoleBinding = namespace-level access**  
-> **ClusterRole & ClusterRoleBinding = cluster-wide access**  
+1. Pod starts
+2. Pod uses **ServiceAccount**
+3. Kubernetes mounts SA token
+4. Pod calls Kubernetes API
+5. API Server identifies the subject
+6. RBAC checks:
 
-# Diagram
+   * RoleBinding / ClusterRoleBinding
+7. Role / ClusterRole defines allowed actions
+8. Request is **Allowed or Forbidden**
 
-https://app.eraser.io/workspace/0HjEEBtv3M5GJKz078mi?origin=share
+---
+
+# **Real-World Scenarios**
+
+### ✅ App needs to read ConfigMaps
+
+→ ServiceAccount + Role + RoleBinding
+
+### ✅ Controller needs cluster-wide access
+
+→ ServiceAccount + ClusterRole + ClusterRoleBinding
+
+### ❌ Never use admin credentials inside Pods
+
+---
+
+# **Best Practices**
+
+✔ One ServiceAccount per application
+✔ Least privilege (smallest verbs & resources)
+✔ Prefer Role over ClusterRole
+✔ Never bind `cluster-admin` casually
+✔ Use `kubectl auth can-i` to verify access
+
+---
+
+# **Summary (Very Important)**
+
+> **Users = humans**
+> **ServiceAccounts = applications**
+> **RBAC only authorizes, never creates identities**
+
+---
+
+# **Diagram (Identity → RBAC → Permission)**
+
+[https://app.eraser.io/workspace/0HjEEBtv3M5GJKz078mi?origin=share](https://app.eraser.io/workspace/0HjEEBtv3M5GJKz078mi?origin=share)
