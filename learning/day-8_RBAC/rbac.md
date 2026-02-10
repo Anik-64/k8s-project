@@ -18,8 +18,6 @@ Kubernetes enforces RBAC using:
 * **ClusterRoleBinding**
 * **ServiceAccount** (identity for applications)
 
----
-
 # **Who Can Be Granted Access? (Very Important)**
 
 RBAC permissions are granted to **subjects**:
@@ -30,12 +28,10 @@ RBAC permissions are granted to **subjects**:
 | **Group**          | Collection of users         |
 | **ServiceAccount** | Applications / Pods         |
 
-👉 **RBAC does NOT create users**
-👉 It only **authorizes identities**
+**RBAC does NOT create users**  
+It only **authorizes identities**
 
----
-
-# **1. ServiceAccount (NEW – Core Concept)**
+# **1. ServiceAccount**
 
 A **ServiceAccount (SA)** is an **identity for Pods**, not humans.
 
@@ -50,8 +46,6 @@ Pods need to:
 
 They **should not use admin credentials**.
 
----
-
 ## Default behavior
 
 If you don’t specify a ServiceAccount:
@@ -61,8 +55,6 @@ Pod uses: default ServiceAccount
 ```
 
 This is **bad practice** for production.
-
----
 
 ## Create a ServiceAccount
 
@@ -77,12 +69,9 @@ metadata:
 ✔ Creates an identity
 ✔ No permissions yet
 
----
-
 # **2. Role**
 
-A **Role** defines **what actions are allowed**
-📍 **Only inside one namespace**
+A **Role** defines **what actions are allowed** **Only inside one namespace**
 
 ### Example: Read Pods in `default`
 
@@ -100,20 +89,16 @@ rules:
 
 ### This role allows:
 
-✔ Read-only access to Pods
-✔ Only in `default` namespace
+✔ Read-only access to Pods  
+✔ Only in `default` namespace  
 
-🚫 Cannot access other namespaces
-
----
+Cannot access other namespaces
 
 # **3. RoleBinding**
 
 RoleBinding = **Connects a Role to a subject**
 
 > “This identity can use this role”
-
----
 
 ## 🔹 RoleBinding for a USER
 
@@ -133,8 +118,6 @@ roleRef:
 ```
 
 ✔ User `anik` can read pods in `default`
-
----
 
 ## 🔹 RoleBinding for a SERVICEACCOUNT (Most Common)
 
@@ -156,8 +139,6 @@ roleRef:
 
 ✔ Pods using `pod-reader-sa` can read pods
 ✔ Only in `default` namespace
-
----
 
 # **4. Using ServiceAccount in a Pod**
 
@@ -185,8 +166,6 @@ system:serviceaccount:default:pod-reader-sa
 
 ✔ RBAC is applied using that identity
 
----
-
 # **5. ClusterRole**
 
 A **ClusterRole** defines permissions **cluster-wide**
@@ -207,13 +186,9 @@ rules:
   verbs: ["get", "list"]
 ```
 
----
-
 # **6. ClusterRoleBinding**
 
 ClusterRoleBinding = attach ClusterRole to a subject **for the whole cluster**
-
----
 
 ## Example: User access
 
@@ -230,8 +205,6 @@ roleRef:
   name: view-nodes
   apiGroup: rbac.authorization.k8s.io
 ```
-
----
 
 ## Example: ServiceAccount cluster access
 
@@ -252,8 +225,6 @@ roleRef:
 
 ✔ Any pod using this SA can read nodes
 
----
-
 # **Big Differences (Updated)**
 
 | Component          | Scope     | Used By   | Purpose                   |
@@ -263,8 +234,6 @@ roleRef:
 | ClusterRole        | Cluster   | User / SA | Cluster permissions       |
 | ClusterRoleBinding | Cluster   | User / SA | Attach ClusterRole        |
 | ServiceAccount     | Namespace | Pods      | Identity for applications |
-
----
 
 # **How Everything Works Together (FLOW)**
 
@@ -279,8 +248,6 @@ roleRef:
 7. Role / ClusterRole defines allowed actions
 8. Request is **Allowed or Forbidden**
 
----
-
 # **Real-World Scenarios**
 
 ### ✅ App needs to read ConfigMaps
@@ -293,25 +260,19 @@ roleRef:
 
 ### ❌ Never use admin credentials inside Pods
 
----
-
 # **Best Practices**
 
-✔ One ServiceAccount per application
-✔ Least privilege (smallest verbs & resources)
-✔ Prefer Role over ClusterRole
-✔ Never bind `cluster-admin` casually
-✔ Use `kubectl auth can-i` to verify access
-
----
+✔ One ServiceAccount per application  
+✔ Least privilege (smallest verbs & resources)  
+✔ Prefer Role over ClusterRole  
+✔ Never bind `cluster-admin` casually  
+✔ Use `kubectl auth can-i` to verify access  
 
 # **Summary (Very Important)**
 
 > **Users = humans**
 > **ServiceAccounts = applications**
 > **RBAC only authorizes, never creates identities**
-
----
 
 # **Diagram (Identity → RBAC → Permission)**
 
