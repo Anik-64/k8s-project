@@ -14,10 +14,14 @@ spec:
 # request should be the base64 encoded .csr
 
 # how to get base64 encoded .csr?
-## run ->$ cat filename.csr | base64 | tr -d "\n"
+## run ->$ cat filename.csr | base64 | tr -d "\n" or
+## run ->$ cat filename.csr | base64 -w 0
 
 # Apply this csr.yaml file 
 
 # After approved the csr using the command ($ kubectl certificate approve anik)
 ## run ->$ kubectl get csr anik -o yaml > issuecert.yaml
 # To find the issued certificate in the issuecert.yaml file 
+
+# To deny a certificate signing request
+## run ->$ kubectl certificate deny anik
