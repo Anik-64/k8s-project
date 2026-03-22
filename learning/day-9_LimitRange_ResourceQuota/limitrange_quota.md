@@ -86,7 +86,7 @@ limits:
 
 Scheduler uses requests to place pods on nodes.
 
-Kubernetes adds:
+Kubernetes auto-adds:
 
 ```yaml
 requests:
