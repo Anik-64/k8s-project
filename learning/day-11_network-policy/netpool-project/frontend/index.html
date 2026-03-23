@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>K8s Items App</title>
+  <style>
+    body { font-family: sans-serif; max-width: 700px; margin: 40px auto; padding: 0 20px; }
+    input, textarea { padding: 8px; margin: 4px; border: 1px solid #ccc; border-radius: 4px; width: 200px; }
+    button { padding: 8px 16px; border-radius: 4px; cursor: pointer; margin: 4px; }
+    .item { border: 1px solid #eee; padding: 12px; margin: 8px 0; border-radius: 6px; display:flex; justify-content:space-between; align-items:center; }
+    .del { background:#fee; color:#c00; border:1px solid #fcc; }
+  </style>
+</head>
+<body>
+  <h2>Items (K8s CRUD Demo)</h2>
+
+  <div>
+    <input id="name" placeholder="Item name" />
+    <input id="desc" placeholder="Description" />
+    <button onclick="createItem()">Add item</button>
+  </div>
+
+  <div id="items"></div>
+
+  <script>
+    // In K8s: backend-svc is resolved via CoreDNS
+    // In the same cluster: use relative path (nginx proxies /api to backend)
+    const API = "/api";
+
+    async function load() {
+      const res = await fetch(`${API}/items`);
+      const items = await res.json();
+      document.getElementById("items").innerHTML = items.map(i => `
+        <div class="item">
+          <div><strong>${i.name}</strong> — ${i.description}</div>
+          <button class="del" onclick="deleteItem(${i.id})">Delete</button>
+        </div>`).join("");
+    }
+
+    async function createItem() {
+      const name = document.getElementById("name").value;
+      const description = document.getElementById("desc").value;
+      await fetch(`${API}/items`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({ name, description })
+      });
+      load();
+    }
+
+    async function deleteItem(id) {
+      await fetch(`${API}/items/${id}`, { method: "DELETE" });
+      load();
+    }
+
+    load();
+  </script>
+</body>
+</html>

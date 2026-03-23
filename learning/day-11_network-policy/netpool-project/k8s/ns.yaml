@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: frontend
+  labels:
+    kubernetes.io/metadata.name: frontend
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: backend
+  labels:
+    kubernetes.io/metadata.name: backend
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: database
+  labels:
+    kubernetes.io/metadata.name: database
