@@ -1,0 +1,10 @@
+1. kubectl apply -f ns.yaml
+2. kubectl apply -f pgsecret.yaml
+3. # Copy postgres-secret into backend namespace (secrets are namespace-scoped)
+   kubectl get secret postgres-secret -n database -o yaml \
+   | sed 's/namespace: database/namespace: backend/' \
+   | kubectl apply -f -
+4. kubectl apply -f pgdeploy.yaml
+5. kubectl apply -f backend.yaml
+6. kubectl apply -f frontend.yaml
+7. kubectl apply -f netpool.yaml
