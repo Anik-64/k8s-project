@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-ingress
+  # annotations: 
+  #   nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  ingressClassName: nginx # Which ingress controller in your cluster
+  rules:
+  - host: anik.com
+    http:
+      paths:
+      - path: /ngi
+        pathType: Prefix
+        backend:
+          service:
+            name: nginx-service
+            port:
+              number: 80
+      - path: /htpd
+        pathType: Prefix
+        backend:
+          service:
+            name: httpd-service
+            port:
+              number: 80
